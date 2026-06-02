@@ -1,9 +1,9 @@
 from datetime import datetime, timezone
 from uuid import UUID
 
+from pydantic import EmailStr
 from sqlalchemy.dialects import postgresql
 from sqlmodel import Column, Field, SQLModel
-from sqlmodel.main import EmailStr
 
 
 class User(SQLModel, table=True):
