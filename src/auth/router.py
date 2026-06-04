@@ -1,4 +1,8 @@
-from fastapi import APIRouter
+from typing import Annotated
+
+from fastapi import APIRouter, Depends
+from fastapi.security import OAuth2PasswordRequestForm
+from passlib.ifc import log
 
 from src.auth.schemas import userCreate, userRead
 from src.dependencies import UserServiceDep
@@ -14,8 +18,11 @@ async def signup(user: userCreate, service: UserServiceDep):
 
 
 @router.post("/login")
-async def login():
-    pass
+async def login(
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    service: UserServiceDep,
+):
+    return await service.login_user(form_data.username, form_data.password)
 
 
 @router.post("/logout")

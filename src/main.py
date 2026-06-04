@@ -2,8 +2,6 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from src.users.models import User
-
 from .database import create_all_tables
 
 
