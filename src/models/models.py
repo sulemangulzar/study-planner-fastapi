@@ -1,11 +1,17 @@
-from uuid import UUID
+from datetime import datetime
+from uuid import UUID, uuid4
 
 from pydantic import EmailStr
 from sqlmodel import Field, SQLModel
 
 
 class User(SQLModel, table=True):
-    id: UUID = Field(default=None, primary_key=True)
+    __tablename__ = "users"
+
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
     name: str = Field()
-    email: EmailStr = Field()
+    username: str = Field(nullable=False)
+    email: EmailStr = Field(nullable=False)
     password_hash: str = Field()
+    is_active: bool = Field(default=True)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
