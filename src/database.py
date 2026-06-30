@@ -11,6 +11,9 @@ async_session = async_sessionmaker(
 
 
 async def create_all_tables():
+    # Import models so SQLModel knows which tables to create
+    import src.models.models  # noqa: F401
+
     async with engine.begin() as connection:
         await connection.run_sync(SQLModel.metadata.create_all)
 

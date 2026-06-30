@@ -1,9 +1,8 @@
-from datetime import datetime
+from uuid import UUID
 
 import bcrypt
 import jwt
 from fastapi import HTTPException, Request
-from jwt import ExpiredSignatureError, InvalidTokenError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select
 
@@ -85,11 +84,16 @@ class UserService:
 
         token = token.split(" ")[-1]
 
-        data = jwt.decode(
-            token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM]
-        )
+        try:
+            data = jwt.decode(
+                token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM]
+            )
+        except jwt.ExpiredSignatureError:
+            raise HTTPException(status_code=401, detail="Token has expired")
+        except jwt.InvalidTokenError:
+            raise HTTPException(status_code=401, detail="Invalid token")
 
-        user_id = data["user"]["id"]
+        user_id = UUID(data["user"]["id"])
 
         result = await self.session.execute(select(User).where(User.id == user_id))
 

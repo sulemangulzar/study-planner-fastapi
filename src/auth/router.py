@@ -1,11 +1,9 @@
-import jwt
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter
 
 from src.auth.schemas import userCreate, userLogin, userRead
-from src.config import settings
-from src.dependencies import UserServiceDep
+from src.dependencies import UserServiceDep, userAuthDep
 
-router = APIRouter(prefix="/auth", tags=["Users"])
+router = APIRouter(prefix="/auth", tags=["Auth"])
 
 
 @router.post("/signup", response_model=userRead, status_code=201)
@@ -14,18 +12,15 @@ async def signup(user: userCreate, service: UserServiceDep):
 
 
 @router.post("/login")
-async def login(
-    form_data: userLogin,
-    service: UserServiceDep,
-):
+async def login(form_data: userLogin, service: UserServiceDep):
     return await service.login_user(form_data)
 
 
 @router.get("/is_auth", response_model=userRead)
-async def is_auth(request: Request, service: UserServiceDep):
-    return await service.is_authenticated(request)
+async def is_auth(user: userAuthDep):
+    return user
 
 
 @router.post("/logout")
 async def logout():
-    pass
+    return {"message": "Logout is handled on the frontend by deleting the token"}
